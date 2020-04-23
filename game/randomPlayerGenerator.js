@@ -1,4 +1,4 @@
-const fighterClasses = require('../data/fighterClasses.js');
+const fighterClasses = require('./data/fighterClasses.js');
 const entityGenerator = require('./entityGenerator.js');
 
 function * generateRandomPlayer(){
