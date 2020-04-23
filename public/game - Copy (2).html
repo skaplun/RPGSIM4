@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Leaderboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.min.js"></script>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <link href="assets/css/game.css" rel="stylesheet">
+  
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+
+	<script src="assets/js/honeycomb-grid-web.js"></script>
+	<script src="assets/js/semantic.min.js"></script>
+	<link rel="stylesheet" href="assets/css/semantic.min.css"></link>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.4/svg.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="flex-container" id="world-game-container">
+    <div id="content"></div>
+    <div id="chatContainer">
+      <div class="chatArea">
+        <ul id="messages" class="messages"></ul>
+      </div>
+      <input id='inputMessage' class="inputMessage" placeholder="Type here..." type="text">
+    </div>
+  </div>
+  
+  
+  
+
+<style>
+
+/******* small body  ********/
+
+.small-profile{
+    height: 160px;
+    width: 80px;
+    margin-top: 10px !important;
+	display : inline-block;
+}
+
+.small-profile .human-body img {
+    position: absolute;
+    left: 50%;
+    fill: #57c9d5;
+}
+
+.small-profile .human-body img.head {
+    margin-left: -8.55px;
+    top: -1.8px;
+}
+
+.small-profile .human-body img.left-shoulder {
+    margin-left: -16.05px;
+    top: 20.7px;
+}
+
+.small-profile .human-body img.right-shoulder {
+    margin-left: 4.05px;
+    top: 20.7px;
+}
+
+.small-profile .human-body img.left-arm {
+    margin-left: -23.4px;
+    top: 33.6px;
+}
+
+.small-profile .human-body img.right-arm {
+    margin-left: 11.4px;
+    top: 33.6px;
+    z-index: 10001;
+}
+
+.small-profile .human-body img.chest {
+    margin-left: -13.05px;
+    top: 26.4px;
+}
+
+.small-profile .human-body img.stomach {
+    margin-left: -11.25px;
+    top: 39px;
+}
+
+.small-profile .human-body img.left-leg {
+    margin-left: -13.95px;
+    top: 57.5px;
+    z-index: 9999;
+}
+
+.small-profile .human-body img.right-leg {
+    margin-left: 0.45px;
+    top: 61.5px;
+    z-index: 9999;
+}
+
+.small-profile .human-body img.left-hand {
+    margin-left: -30.75px;
+    top: 67.2px;
+}
+
+.small-profile .human-body img.right-hand {
+    margin-left: 19.95px;
+    top: 67.2px;
+    z-index: 10000;
+}
+
+.small-profile .human-body img.left-foot {
+    margin-left: -22.65px;
+    top: 126.5px;
+}
+
+.small-profile .human-body img.right-foot {
+    margin-left: 1.65px;
+    top: 133.5px;
+}
+
+/******* medium body  ********/
+
+.medium-profile{
+    height: 219px;
+    width: 100%;
+    margin-top: 22px !important;
+}
+
+.medium-profile .human-body img {
+    position: absolute;
+    left: 50%;
+    fill: #57c9d5;
+}
+
+.medium-profile .human-body img.head {
+    margin-left: -5.55px;
+    top: -18.8px;
+}
+
+.medium-profile .human-body img.left-shoulder {
+    margin-left: -18.05px;
+    top: 18.7px;
+}
+
+.medium-profile .human-body img.right-shoulder {
+    margin-left: 15.05px;
+    top: 19.7px;
+}
+
+.medium-profile .human-body img.left-arm {
+    margin-left: -29.4px;
+    top: 35.6px;
+}
+
+.medium-profile .human-body img.right-arm {
+    margin-left: 25.4px;
+    top: 36.6px;
+    z-index: 10001;
+}
+
+.medium-profile .human-body img.chest {
+    margin-left: -13.05px;
+    top: 26.4px;
+}
+
+.medium-profile .human-body img.stomach {
+    margin-left: -11.25px;
+    top: 39px;
+}
+
+.medium-profile .human-body img.left-leg {
+   margin-left: -13.95px;
+    top: 67.5px;
+    z-index: 9999;
+}
+
+.medium-profile .human-body img.right-leg {
+    margin-left: 9.45px;
+    top: 72.5px;
+    z-index: 9999;
+}
+
+.medium-profile .human-body img.left-hand {
+    margin-left: -38.75px;
+    top: 88.2px;
+    z-index: 10000;
+}
+
+.medium-profile .human-body img.right-hand {
+    margin-left: 36.95px;
+    top: 90.2px;
+    z-index: 10000;
+}
+
+.medium-profile .human-body img.left-foot {
+    margin-left: -27.65px;
+    top: 182.5px;
+}
+
+.medium-profile .human-body img.right-foot {
+    margin-left: 9.65px;
+    top: 195.5px;
+}
+
+
+/***** large body ****/
+
+.large-profile .human-body {
+    width: 207px;
+    position: relative;
+    padding-top: 240px;
+    height: 300px;
+    display: block;
+    /* margin: 40px auto; */
+}
+
+.large-profile .human-body img {
+    position: absolute;
+    left: 50%;
+    fill: #57c9d5;
+}
+
+.large-profile .human-body img.head {
+    margin-left: -28.5px;
+    top: -6px;
+}
+
+.large-profile .human-body img.left-shoulder {
+        margin-left: -44.5px;
+    top: 52px;
+}
+
+.large-profile .human-body img.right-shoulder {
+    margin-left: -1.5px;
+    top: 52px;
+}
+
+.large-profile .human-body img.left-arm {
+       margin-left: -60px;
+    top: 75px;
+}
+
+.large-profile .human-body img.right-arm {
+    margin-left: 13px;
+    top: 75px;
+    z-index: 10001;
+	
+}
+
+.large-profile .human-body img.chest {
+        margin-left: -38.5px;
+    top: 61px;
+}
+
+.large-profile .human-body img.stomach {
+    margin-left: -35.5px;
+    top: 88px;
+}
+
+.large-profile .human-body img.left-leg {
+  margin-left: -41.5px;
+    top: 125px;
+    z-index: 9999;
+}
+
+.large-profile .human-body img.right-leg {
+        margin-left: -9.5px;
+    top: 134px;
+    z-index: 9999;
+}
+
+.large-profile .human-body img.left-hand {
+    margin-left: -73.5px;
+    top: 146px;
+}
+
+.large-profile .human-body img.right-hand {
+  margin-left: 31.5px;
+    top: 146px;
+    z-index: 10000;
+}
+
+.large-profile .human-body img.left-foot {
+       margin-left: -58.5px;
+    top: 278px;
+}
+
+.large-profile .human-body img.right-foot {
+    margin-left: -5.5px;
+    top: 294px;
+}
+
+</style>
+
+<style>
+
+.grid{
+	height : 100vh;
+}
+div.buttons{
+	display: block !important;
+}
+
+
+
+.top-row,
+.bottom-row{
+	margin: 2% !important;
+}
+.top-row button,
+.bottom-row button{
+	margin: 2% !important;
+}
+
+.hidden{
+	display : none !important;
+}
+
+.map-container{
+	border: 1px solid black;
+    position: absolute !important;
+    height: 150px;
+    z-index: 5;
+	top : 30%;
+	right: 0%;
+	overflow : hidden;
+}
+
+.map-full{
+    width: 219px;
+}
+
+.map-folded{
+    width: 15px;
+}
+
+.invisible{
+	visibility : hidden;
+}
+
+.inlined{
+	display : inline-block;
+}
+
+.player-container .segment,
+.action-menu .segment{
+	padding: 0px;
+	border : none !important;
+}
+
+.player-container .segments,
+.action menu .segments {
+	border: none !important;
+    box-shadow: none;
+}
+
+
+.player-container{
+	width : 30%;
+}
+
+
+.left-def-container{
+    width: 25%;
+    top: -121px;
+    margin-right: 30px !important;
+	margin-left : 5px !important;
+}
+
+.right-def-container{
+    width: 20%;
+    top: -118px;
+    left: 72px;
+}
+</style>
+
+<div class="ui segment map-container map-full hidden" id="map-container">
+	<div id="svg-container"></div>
+</div>
+
+<div class="ui internally celled grid hidden" id="fightScene">
+  
+  <div class="row">
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			<div class="ui vertical center aligned segment">
+			  <p>enemy 1</p>
+			</div>
+			
+			<div class="ui vertical segment" id="enemy-left">
+			  
+			</div>
+			
+			<div class="ui vertical segment">
+				
+				<div class="ui horizontal basic segment">
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  
+				</div>
+				
+			</div>
+		
+		</div>
+	
+	
+    </div>
+    
+	<div class="four wide column">
+      
+			<div class="ui segments">
+				<div class="ui vertical center aligned segment">
+				  <p>Glorious battle Sim</p>
+				</div>
+				
+				<div class="ui vertical segment">
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+				
+					
+				</div>
+				
+				<div class="ui vertical center aligned segment">
+				  <p>50 are waiting to attack</p>
+				</div>
+			
+			</div>
+    </div>
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			<div class="ui vertical center aligned segment">
+			  <p>enemy 2</p>
+			</div>
+			
+			<div class="ui vertical segment" id="enemy-right">
+			  
+			</div>
+			
+			<div class="ui vertical segment">
+			  	<div class="ui horizontal basic segment">
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  
+				</div>
+			</div>
+		
+		</div>
+	
+    </div>
+  </div>
+
+<!----bottom row --->
+  
+  <div class="row">
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			
+			<div class="ui vertical center aligned  segment">
+			  <p>Me</p>
+			</div>
+			
+		  <div class="ui horizontal segments">
+			<div class="ui segment player-inventory">
+			  <div class="ui vertical segments">
+					<div class="ui vertical segment">
+						<p>Inventory Item</p>
+					</div>
+					<div class="ui vertical segment">
+						<p>Inventory Item</p>
+					</div>
+					<div class="ui vertical segment">
+						<p>Inventory Item</p>
+					</div>
+					<div class="ui vertical segment">
+						<p>Inventory Item</p>
+					</div>
+					
+			  
+			  </div>
+			</div>
+					<div class="ui segments vertical player-container">
+						<div class="ui segment center aligned vertical "> <img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;" data-defend="bottom"> </div>
+						<div class="ui segment horizontal">
+								<div class="ui segment vertical inlined left-def-container"><img src="/assets/images/svg/left-arrow-4.svg" style="width: 17px;" data-defend="left"></div>
+								<div class="ui segment vertical player-body inlined" id="player-body"></div>
+								<div class="ui segment vertical inlined right-def-container"><img src="/assets/images/svg/right-arrow-4.svg" style="width: 17px;" data-defend="right"></div>
+							</div>
+						<div class="ui segment center aligned vertical "><img src="/assets/images/svg/down-arrow-5.svg" style="width: 17px;" data-defend="bottom"></div>
+					</div>
+		
+			</div>
+		</div>
+		
+	
+    </div>
+    <div class="four wide column">
+      
+		<div class="ui segments action-menu">
+			
+		<div class="ui vertical segment">
+			
+				
+					<div class="ui horizontal center aligned basic segment">
+						 <button class="ui icon button">
+						  <img src="/assets/images/svg/drag-5.svg" style="width: 21px;" data-movement="top-left">
+						</button>
+						<button class="ui icon button floated right">
+						 <img src="/assets/images/svg/drag-2.svg" style="width: 21px;" data-movement="top-right">
+						</button>
+					</div>
+						
+			</div>
+			
+			
+			
+			<div class="ui vertical center aligned segment">
+			
+				 <div class="ui buttons top-row">
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;">
+					  </button>
+						
+					  <button class="ui icon button">
+							<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					</div>
+					
+					
+					
+					<div class="ui vertical aligned segment inlined">
+					  <div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;" data-attack="top-left">
+						  </button>
+							
+						  <button class="ui icon button">
+								<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;" data-attack="top">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;" data-attack="top-left">
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/left-arrow-4.svg" style="width: 17px;" data-attack="left">
+						  </button>
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/expand-2.svg" style="width: 17px;" >
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/right-arrow-4.svg" style="width: 17px;" data-attack="right">
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-7.svg" style="width: 17px;" data-attack="bottom-left">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/down-arrow-5.svg" style="width: 17px;" data-attack="bottom">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-5.svg" style="width: 17px;" data-attack="bottom-right">
+						  </button>
+						</div>
+					</div>
+				
+					<div class="ui buttons bottom-row">
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;">
+					  </button>
+						
+					  <button class="ui icon button">
+							<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					</div>
+			</div>
+			
+		
+		</div>
+	  
+    </div>
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			
+			<div class="ui vertical center aligned segment">
+			  <p>Flanking</p>
+			</div>
+			
+		  <div class="ui horizontal segments">
+			<div class="ui segment">
+				
+				<div class="ui segments">
+					<div class="ui vertical center aligned segment">
+					  <p>Left</p>
+					</div>
+					
+					<div class="ui vertical segment" id="flanking-left">
+					  
+					  
+					    
+					
+					  
+					  
+					  
+					</div>
+				</div>
+					
+			
+			 
+			</div>
+			
+			<div class="ui segment">
+			  
+			  <div class="ui segments">
+			  
+					<div class="ui vertical center aligned segment">
+					  <p>Right</p>
+					</div>
+					
+					<div class="ui vertical segment" id="flanking-right">
+					</div>
+					
+				</div>
+			  
+			</div>
+		
+			</div>
+		</div>
+		
+    </div>
+  </div>
+  
+  
+</div>
+  
+  
+  <script src="assets/js/refreshToken.js"></script>
+  <script src="assets/js/game.js"></script>
+  
+  
+  
+</body>
+
+</html>

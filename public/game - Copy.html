@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Leaderboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.min.js"></script>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <link href="assets/css/game.css" rel="stylesheet">
+  
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+
+	<script src="assets/js/honeycomb-grid-web.js"></script>
+	<script src="assets/js/semantic.min.js"></script>
+	<link rel="stylesheet" href="assets/css/semantic.min.css"></link>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.4/svg.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="flex-container" id="world-game-container">
+    <div id="content"></div>
+    <div id="chatContainer">
+      <div class="chatArea">
+        <ul id="messages" class="messages"></ul>
+      </div>
+      <input id='inputMessage' class="inputMessage" placeholder="Type here..." type="text">
+    </div>
+  </div>
+  
+  
+  
+  <style>
+
+.grid{
+	height : 100vh;
+}
+div.buttons{
+	display: block !important;
+}
+
+
+
+.top-row,
+.bottom-row{
+	margin: 2% !important;
+}
+.top-row button,
+.bottom-row button{
+	margin: 2% !important;
+}
+
+.hidden{
+	display : none !important;
+}
+</style>
+
+<style>
+
+
+.small-profile .human-body svg {
+    position: absolute;
+    left: 50%;
+    fill: #57c9d5;
+}
+
+.small-profile .human-body svg.head {
+    margin-left: -8.55px;
+    top: -1.8px;
+}
+
+.small-profile .human-body svg.left-shoulder {
+    margin-left: -16.05px;
+    top: 20.7px;
+}
+
+.small-profile .human-body svg.right-shoulder {
+    margin-left: 4.05px;
+    top: 20.7px;
+}
+
+.small-profile .human-body svg.left-arm {
+    margin-left: -23.4px;
+    top: 33.6px;
+}
+
+.small-profile .human-body svg.right-arm {
+    margin-left: 11.4px;
+    top: 33.6px;
+    z-index: 10001;
+}
+
+.small-profile .human-body svg.chest {
+    margin-left: -13.05px;
+    top: 26.4px;
+}
+
+.small-profile .human-body svg.stomach {
+    margin-left: -11.25px;
+    top: 39px;
+}
+
+.small-profile .human-body svg.left-leg {
+    margin-left: -13.95px;
+    top: 61.5px;
+    z-index: 9999;
+}
+
+.small-profile .human-body svg.right-leg {
+    margin-left: 0.45px;
+    top: 61.5px;
+    z-index: 9999;
+}
+
+.small-profile .human-body svg.left-hand {
+    margin-left: -30.75px;
+    top: 67.2px;
+}
+
+.small-profile .human-body svg.right-hand {
+    margin-left: 19.95px;
+    top: 67.2px;
+    z-index: 10000;
+}
+
+.small-profile .human-body svg.left-foot {
+    margin-left: -10.65px;
+    top: 136.5px;
+}
+
+.small-profile .human-body svg.right-foot {
+    margin-left: 1.65px;
+    top: 133.5px;
+}
+
+.image .human-body {
+    height: 310px;
+}
+
+.image .human-body svg {
+    position: absolute;
+    left: 50%;
+    fill: #57c9d5;
+}
+
+.image .human-body svg.head {
+    margin-left: -15.675px;
+    top: -15.3px;
+}
+
+.image .human-body svg.left-shoulder {
+    margin-left: -29.425px;
+    top: 37.95px;
+}
+
+.image .human-body svg.right-shoulder {
+    margin-left: 7.425px;
+    top: 37.95px;
+}
+
+.image .human-body svg.left-arm {
+    margin-left: -42.9px;
+    top: 42.6px;
+}
+
+.image .human-body svg.right-arm {
+    margin-left: 20.9px;
+    top: 42.6px;
+    z-index: 10001;
+}
+
+.image .human-body svg.chest {
+    margin-left: -23.925px;
+    top: 48.4px;
+}
+
+.image .human-body svg.stomach {
+    margin-left: -20.625px;
+    top: 56.5px;
+}
+
+.image .human-body svg.left-leg {
+    margin-left: -25.575px;
+    top: 63.75px;
+    z-index: 9999;
+}
+
+.image .human-body svg.right-leg {
+    margin-left: 0.825px;
+    top: 63.75px;
+    z-index: 9999;
+}
+
+.image .human-body svg.left-hand {
+    margin-left: -56.375px;
+    top: 123.2px;
+}
+
+.image .human-body svg.right-hand {
+    margin-left: 36.575px;
+    top: 123.2px;
+    z-index: 10000;
+}
+
+.image .human-body svg.left-foot {
+    margin-left: -19.525px;
+    top: 250.25px;
+}
+
+.image .human-body svg.right-foot {
+    margin-left: 3.025px;
+    top: 250.25px;
+}
+.map-container{
+	border: 1px solid black;
+    position: absolute !important;
+    height: 150px;
+    z-index: 5;
+	top : 30%;
+	right: 0%;
+	overflow : hidden;
+}
+
+.map-full{
+    width: 219px;
+}
+
+.map-folded{
+    width: 15px;
+}
+
+.invisible{
+	visibility : hidden;
+}
+
+.inlined{
+	display : inline-block;
+}
+
+.action-menu .segment{
+	padding: 0px;
+	border : none !important;
+}
+
+.action menu .segments {
+	border: none !important;
+    box-shadow: none;
+}
+<!-- #svg-container{ -->
+	<!-- width: 100%; -->
+    <!-- height: 100%; -->
+	<!-- position: relative; -->
+<!-- } -->
+
+</style>
+
+<div class="ui segment map-container map-full hidden" id="map-container">
+	<div id="svg-container"></div>
+</div>
+
+<div class="ui internally celled grid hidden" id="fightScene">
+  
+  <div class="row">
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			<div class="ui vertical center aligned segment">
+			  <p>enemy 1</p>
+			</div>
+			
+			<div class="ui vertical segment">
+			  <p></p>
+			</div>
+			
+			<div class="ui vertical segment">
+				
+				<div class="ui horizontal basic segment">
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  
+				</div>
+				
+			</div>
+		
+		</div>
+	
+	
+    </div>
+    
+	<div class="four wide column">
+      
+			<div class="ui segments">
+				<div class="ui vertical center aligned segment">
+				  <p>Glorious battle Sim</p>
+				</div>
+				
+				<div class="ui vertical segment">
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+					<div class="ui basic segment">
+					  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+					</div>
+					
+				
+					
+				</div>
+				
+				<div class="ui vertical center aligned segment">
+				  <p>50 are waiting to attack</p>
+				</div>
+			
+			</div>
+    </div>
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			<div class="ui vertical center aligned segment">
+			  <p>enemy 2</p>
+			</div>
+			
+			<div class="ui vertical segment">
+			  <p></p>
+			</div>
+			
+			<div class="ui vertical segment">
+			  	<div class="ui horizontal basic segment">
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  <a class="ui basic label">Status effect</a>
+				  
+				</div>
+			</div>
+		
+		</div>
+	
+    </div>
+  </div>
+
+<!----bottom row --->
+  
+  <div class="row">
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			
+			<div class="ui vertical center aligned  segment">
+			  <p>Me</p>
+			</div>
+			
+		  <div class="ui horizontal segments">
+			<div class="ui segment">
+			  <p></p>
+			</div>
+			
+			<div class="ui segment">
+			  <p></p>
+			</div>
+		
+			</div>
+		</div>
+		
+	
+    </div>
+    <div class="four wide column">
+      
+		<div class="ui segments action-menu">
+		
+			<div class="ui vertical segment">
+			
+				<div class="ui horizontal segments">
+					<div class="ui horizontal basic segment">
+						 <button class="ui icon button">
+						  <img src="/assets/images/svg/drag-5.svg" style="width: 21px;" data-movement="top-left">
+						</button>
+					</div>
+						
+					<div class="ui center aligned horizontal basic segment  ">
+						<button class="ui icon button floated right">
+						 <img src="/assets/images/svg/drag.svg" style="width: 21px; transform : rotate(-90deg);" data-movement="top">
+						</button>
+					</div>
+					
+					<div class="ui right aligned horizontal basic segment  ">
+						<button class="ui icon button floated right">
+						 <img src="/assets/images/svg/drag-2.svg" style="width: 21px;" data-movement="top-right">
+						</button>
+					</div>
+					
+					
+				</div>
+				
+			</div>
+			
+			<div class="ui vertical center aligned segment">
+			
+				 <div class="ui buttons top-row">
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;">
+					  </button>
+						
+					  <button class="ui icon button">
+							<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					</div>
+					
+				<div class="ui horizontal center aligned segment">
+					<div class="ui vertical aligned segment inlined" style ="top: -59px; left: -39px;">
+						  <button class="ui icon button" >
+							<img src="/assets/images/svg/drag-1.svg" style="width: 17px; tr" data-movement="left">
+						  </button>
+					</div>
+					
+					<div class="ui vertical aligned segment inlined">
+					  <div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;" data-attack="top-left">
+						  </button>
+							
+						  <button class="ui icon button">
+								<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;" data-attack="top">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;" data-attack="top-left">
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/left-arrow-4.svg" style="width: 17px;" data-attack="left">
+						  </button>
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/expand-2.svg" style="width: 17px;" >
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/right-arrow-4.svg" style="width: 17px;" data-attack="right">
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-7.svg" style="width: 17px;" data-attack="bottom-left">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/down-arrow-5.svg" style="width: 17px;" data-attack="bottom">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/diagonal-5.svg" style="width: 17px;" data-attack="bottom-right">
+						  </button>
+						</div>
+					</div>
+					
+					<div class="ui vertical aligned segment inlined">
+					  <div class="ui buttons">
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;">
+						  </button>
+							
+						  <button class="ui icon button">
+								<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;" data-defend="top">
+						  </button>
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;" >
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/left-arrow-4.svg" style="width: 17px;" data-defend="left">
+						  </button>
+						  <button class="ui icon button" >
+							<img src="/assets/images/svg/expand-2.svg" style="width: 17px;" data-defend="center">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/right-arrow-4.svg" style="width: 17px;" data-defend="right">
+						  </button>
+						</div>
+						<div class="ui buttons">
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/diagonal-7.svg" style="width: 17px;">
+						  </button>
+						  <button class="ui icon button">
+							<img src="/assets/images/svg/down-arrow-5.svg" style="width: 17px;" data-defend="bottom">
+						  </button>
+						  <button class="ui icon button invisible">
+							<img src="/assets/images/svg/diagonal-5.svg" style="width: 17px;">
+						  </button>
+						</div>
+					</div>
+					
+					<div class="ui vertical center aligned segment inlined" style ="top: -59px; left: 39px;">
+						  <button class="ui icon button" >
+							<img src="/assets/images/svg/drag.svg" style="width: 17px;" data-movement="right">
+						  </button>
+					</div>
+				
+				</div>
+					
+					<div class="ui buttons bottom-row">
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-4.svg" style="width: 17px;">
+					  </button>
+						
+					  <button class="ui icon button">
+							<img src="/assets/images/svg/up-arrow-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					  <button class="ui icon button">
+						<img src="/assets/images/svg/diagonal-6.svg" style="width: 17px;">
+					  </button>
+					</div>
+			</div>
+			<div class="ui vertical segment">
+			  		<div class="ui horizontal segments">
+						<div class="ui horizontal basic segment">
+							 <button class="ui icon button">
+							  <img src="/assets/images/svg/drag-4.svg" style="width: 21px;" data-movement="bottom-left">
+							</button>
+						</div>
+						
+					<div class="ui center aligned horizontal basic segment  ">
+						<button class="ui icon button floated right">
+						 <img src="/assets/images/svg/drag.svg" style="width: 21px; transform : rotate(90deg);" data-movement="bottom">
+						</button>
+					</div>
+							
+						<div class="ui right aligned horizontal basic segment  ">
+							<button class="ui icon button floated right">
+							 <img src="/assets/images/svg/drag-3.svg" style="width: 21px;" data-movement="bottom-right">
+							</button>
+						</div>
+					</div>
+
+			</div>
+		
+		</div>
+	  
+    </div>
+    <div class="six wide column">
+		
+		<div class="ui segments">
+			
+			<div class="ui vertical center aligned segment">
+			  <p>Flanking</p>
+			</div>
+			
+		  <div class="ui horizontal segments">
+			<div class="ui segment">
+				
+				<div class="ui segments">
+					<div class="ui vertical center aligned segment">
+					  <p>Left</p>
+					</div>
+					
+					<div class="ui vertical segment">
+					  
+					  
+					    
+					
+					  
+					  
+					  
+					</div>
+				</div>
+					
+			
+			 
+			</div>
+			
+			<div class="ui segment">
+			  
+			  <div class="ui segments">
+			  
+					<div class="ui vertical center aligned segment">
+					  <p>Right</p>
+					</div>
+					
+					<div class="ui vertical segment">
+					  <p></p>
+					</div>
+					
+				</div>
+			  
+			</div>
+		
+			</div>
+		</div>
+		
+    </div>
+  </div>
+  
+  
+</div>
+  
+  
+  <script src="assets/js/refreshToken.js"></script>
+  <script src="assets/js/game.js"></script>
+  
+  
+  
+</body>
+
+</html>
